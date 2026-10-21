@@ -1,0 +1,26 @@
+/Users/csillagb/Documents/personal/project_ideas/idea08_llm_gamblers_fallacy/run.py:76: DeprecationWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.
+  .apply(lambda g: g.sample(min(PER_BUCKET, len(g)), random_state=7))
+eligible cases: 52705 {-4: 5413, -3: 3171, -2: 5150, -1: 10101, 1: 10194, 2: 5841, 3: 3759, 4: 9076}
+           up  xgb_up
+streak               
+-4      0.412   0.324
+-3      0.254   0.102
+-2      0.378   0.276
+-1      0.492   0.499
+ 1      0.589   0.688
+ 2      0.661   0.821
+ 3      0.782   0.952
+ 4      0.686   0.822
+model=sonnet cases=320 answered=320 cost=$2.30
+         n  llm_p_up  llm_up  realised  xgb_up  realised_pop  xgb_pop
+streak                                                               
+-4      40     0.340   0.225     0.350   0.250         0.412    0.324
+-3      40     0.377   0.250     0.300   0.075         0.254    0.102
+-2      40     0.446   0.400     0.375   0.275         0.378    0.276
+-1      40     0.502   0.500     0.525   0.500         0.492    0.499
+ 1      40     0.600   0.850     0.575   0.700         0.589    0.688
+ 2      40     0.601   0.775     0.675   0.800         0.661    0.821
+ 3      40     0.664   0.825     0.800   0.975         0.782    0.952
+ 4      40     0.702   0.875     0.750   0.800         0.686    0.822
+{('up-streaks', 'p_up'): (0.037, 3.93), ('up-streaks', 'up'): (0.065, 1.96), ('up-streaks', 'xgb_up'): (0.047, 1.57), ('down-streaks', 'p_up'): (-0.055, -4.88), ('down-streaks', 'up'): (-0.06, -1.71), ('down-streaks', 'xgb_up'): (-0.095, -2.75)}
+median |error| (scaled): {'LLM': 36.448, 'XGBoost': 39.827, 'SRW': 45.119} direction: {'LLM': 0.6875, 'XGBoost': 0.715625, 'Brier LLM': 0.20740468750000002}

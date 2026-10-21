@@ -1,0 +1,521 @@
+\documentclass[10pt]{article}
+\usepackage[a4paper,landscape,margin=1.4cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\setlist{nosep,leftmargin=*,topsep=2pt}
+\usepackage[authoryear,round]{natbib}
+\usepackage[colorlinks=true,linkcolor=black,citecolor=blue,urlcolor=blue]{hyperref}
+\setlength{\parskip}{3pt}
+\setlength{\parindent}{0pt}
+
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcommand{\idea}[2]{\textbf{#1.\ #2}\par\smallskip}
+\newcommand{\inhand}{\textsc{[in hand]}}
+\newcommand{\ext}{\textsc{[in hand + external]}}
+
+\title{Candidate Research Questions Using the Shanghai--Shenzhen Monthly Panel}
+\author{Idea collection for Q1/Q2 economics and finance journals}
+\date{October 2026}
+
+\begin{document}
+\maketitle
+
+\section*{Scope and data inventory}
+
+The ideas below are restricted to investor behaviour, expectation formation and forecasting. They are chosen to be
+feasible with the existing panel and to complement, rather than duplicate, the two ongoing projects: the
+gambler's-fallacy/streak paper and the out-of-sample EPS forecasting report (SRW, Foster, XGBoost). A check of the
+cleaned files shows that the panel contains more than the data description lists:
+
+\begin{itemize}
+\item \textbf{Prices and trading:} unadjusted price, total return index, turnover by volume, shares outstanding,
+  book value per share; 3{,}594 firms, Feb 1991 -- May 2021, Shanghai and Shenzhen.
+\item \textbf{Quarterly earnings:} standalone quarterly EPS with exact (daily) publication dates, about FY2001--FY2021.
+  Out-of-sample SRW and XGBoost forecasts are already built in \texttt{earnings\_prediction}.
+\item \textbf{Analyst consensus (I/B/E/S via Datastream):} monthly 12-month-forward EPS (\texttt{eps\_12fwd}),
+  trailing EPS, high, low and standard deviation of forecasts. Coverage is 15--35\% of firm-months in 2005--2008 and
+  40--65\% from 2009.
+\item \textbf{Factors and risk-free rate:} Liu--Stambaugh--Yuan CH-3/CH-4 factors (MKT, SMB, VMG, PMO), monthly and
+  daily risk-free rate.
+\end{itemize}
+
+\textbf{Identifier caveat.} Firms are identified by Datastream \emph{names} (e.g.\ ``KWEICHOW MOUTAI `A'''), not by
+exchange codes. Ideas tagged \ext{} need a firm-level external merge (preannouncements, daily returns). They require a
+one-off re-export from Eikon with the local six-digit code or RIC. Ideas tagged \inhand{} need nothing beyond the
+current files. Idea~11 uses only a market-wide external series and needs no codes.
+
+\textbf{Proof-of-concept round (October 2026).} Ideas 4--11 (Sections B and C) were tested. The last column of
+Table~1 summarises the results, and each idea has a folder in \texttt{project\_ideas/} with the code, outputs and a
+one-page summary (\texttt{summary.pdf}). The PoCs uncovered three data facts that matter for any follow-up:
+(i) the quarterly EPS is bonus-adjusted to the 2021 share basis while prices and I/B/E/S fields are not; the
+shared code infers share events from the price and total-return series to convert between the two; (ii)
+\texttt{eps\_12fwd} and \texttt{eps\_12trl} are time-weighted I/B/E/S 12-month blends, not fiscal-year figures, and
+the ``trailing'' field partly contains forecasts; (iii) shares outstanding is back-filled in places.
+
+\section*{Table 1. Candidate research questions}
+
+{\footnotesize
+\begin{longtable}{@{}L{3.2cm}L{4.4cm}L{2.5cm}L{3.0cm}L{5.4cm}L{5.8cm}@{}}
+\toprule
+\textbf{Unanswered research question} & \textbf{Idea in brief} & \textbf{Necessary data} & \textbf{Relevant papers} &
+\textbf{What the literature finds / what this research adds} & \textbf{Proof-of-concept results}\\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Unanswered research question} & \textbf{Idea in brief} & \textbf{Necessary data} & \textbf{Relevant papers} &
+\textbf{What the literature finds / what this research adds} & \textbf{Proof-of-concept results}\\
+\midrule
+\endhead
+\midrule
+\multicolumn{6}{r}{\emph{continued on next page}}\\
+\endfoot
+\bottomrule
+\endlastfoot
+
+\multicolumn{6}{@{}l}{\textbf{A. Beliefs about earnings streaks (extensions of the gambler's-fallacy project)}}\\[2pt]
+
+\idea{1}{Do analysts commit the gambler's fallacy?}
+Do sell-side analysts expect streaks of same-sign earnings surprises to reverse, and do their beliefs carry the streak
+underreaction into prices?
+&
+After each quarterly announcement, measure the revision of the consensus \texttt{eps\_12fwd} (scaled by price) and the
+subsequent consensus forecast error (realised FY EPS minus forecast). Regress both on SUE interacted with streak
+length and sign. Under the gambler's fallacy, analysts revise too little after streaks and their errors have the
+sign of the streak. Then test whether the price drift after streaks is concentrated where analysts under-revise.
+&
+\inhand{} Consensus EPS (2005--2021), quarterly EPS and dates, SUE and streak variables from the gambler's-fallacy
+pipeline.
+&
+\citet{loh2012}; \citet{rabin2010}; \citet{chen2016gf}; \citet{abarbanell1992}; \citet{mendenhall1991}; \citet{fan2024}
+&
+\emph{Finds:} investors underreact to earnings streaks, and this is attributed to the gambler's fallacy, but without
+belief data \citep{loh2012}. The fallacy is documented among judges, loan officers and umpires \citep{chen2016gf}.
+Analysts underreact to past earnings in general \citep{abarbanell1992}, and Chinese analysts anchor
+\citep{fan2024}. \emph{Adds:} the first direct test of professional forecasters' beliefs over earnings streaks. It
+separates expected reversal from generic underreaction and supplies a mechanism for the price result in the existing
+paper.
+&
+\emph{Not tested in this PoC round.} Section A.\\[4pt]
+
+\idea{2}{Streaks and disagreement}
+Do earnings streaks raise disagreement among investors, as heterogeneous gambler's-fallacy and hot-hand beliefs
+predict? Does this disagreement explain where the drift occurs?
+&
+\citet{rabin2010} imply that believers in the fallacy underreact to short streaks and overreact to long ones, so a
+mixed population disagrees more as streaks lengthen. Test abnormal turnover in the announcement and following months,
+and the change in analyst dispersion (SD, high--low), as functions of streak length and sign, controlling for $|SUE|$.
+Then condition the streak drift on the disagreement measures.
+&
+\inhand{} Turnover by volume, shares outstanding, \texttt{eps\_12sd}, high, low, SUE and streaks.
+&
+\citet{kandel1995}; \citet{garfinkel2006}; \citet{shu2022}; \citet{rabin2010}; \citet{loh2012}
+&
+\emph{Finds:} disagreement drives volume around earnings news \citep{kandel1995}. Opinion divergence predicts drift
+in the US \citep{garfinkel2006} and in China \citep{shu2022}. \emph{Adds:} no study links streaks to volume or
+dispersion. This gives a price-independent test of the behavioural mechanism. Volume in a retail-dominated market
+mainly reflects retail beliefs, which helps identify them.
+&
+\emph{Not tested in this PoC round.} Section A.\\[4pt]
+
+\idea{3}{Record earnings as a reference point}
+Do investors treat a firm's historical-high (``record'') EPS as a reference point, so that surprises crossing the
+record get a disproportionate reaction?
+&
+Define a record quarter as one in which EPS exceeds all previous values for the same fiscal quarter, or a trailing
+maximum. Compare announcement-month returns and drift for surprises that do and do not break the record, with an
+RD-style comparison in the distance to the record that controls for SUE. Also test ``near misses'' just below the
+record.
+&
+\inhand{} Quarterly EPS histories, returns, SUE.
+&
+\citet{degeorge1999}; \citet{burgstahler1997}; \citet{george2004}; \citet{li2012anchor}; \citet{birru2015}
+&
+\emph{Finds:} firms manage earnings around zero, last year's EPS and the consensus
+\citep{degeorge1999,burgstahler1997}. Price anchors such as the 52-week high and the index's historical high
+predict returns \citep{george2004,li2012anchor}. \emph{Adds:} a firm-level \emph{earnings} anchor, as opposed to a
+price anchor, has not been tested as a source of reference-dependent reactions and drift. The record is salient in
+Chinese financial media, which makes the setting natural.
+&
+\emph{Not tested in this PoC round.} Section A.\\[4pt]
+
+\multicolumn{6}{@{}l}{\textbf{B. Expectation formation and forecasting}}\\[2pt]
+
+\idea{4}{Whose expectations do Chinese prices reflect?}
+Do A-share prices embed naive (seasonal random walk), statistical (ML) or analyst earnings expectations, and does
+this depend on retail dominance?
+&
+Compare the SRW, XGBoost and analyst-based surprises in explaining announcement-month returns. Decompose the SRW
+surprise into an ML-predictable part, known before the announcement, and the ML surprise. If the predictable part
+still moves prices at the announcement and predicts drift, prices reflect naive expectations, as in Bernard--Thomas.
+Implement a pre-announcement long--short portfolio on the ML-predicted SRW surprise. Split the sample by size,
+analyst coverage and turnover.
+&
+\inhand{} Plus the existing out-of-sample forecasts of the earnings-prediction project.
+&
+\citet{bernard1990}; \citet{ball1996}; \citet{campbell2026}; \citet{hunt2022}; \citet{chen2022ml}
+&
+\emph{Finds:} US prices partly reflect naive SRW expectations \citep{bernard1990,ball1996}. ML forecasts proxy for
+market expectations only under some specifications \citep{campbell2026}. ML earnings predictions yield abnormal
+returns in the US \citep{hunt2022,chen2022ml}. \emph{Adds:} the first look-ahead-free test in China of which
+expectation model the market uses, in a setting where naive expectations are most plausible. It builds directly on
+the forecasts already produced.
+&
+\textbf{Partly supported; reframed.} 104k announcements, 2005--20. In the announcement month prices react to the XGBoost surprise (0.73, $t=9.7$) but hardly to the part XGBoost predicted beforehand (0.11, $t=0.9$), so they do not reflect naive SRW expectations. However, that predictable part drives returns before the announcement and predicts the 3-month drift as strongly as the surprise does (0.60, $t=3.5$): predictable information is priced slowly. The pre-formed strategy is weak (CH-4 $\alpha=0.45\%$, $t=1.5$). \texttt{idea04\_whose\_expectations}\\[4pt]
+
+\idea{5}{Machine benchmark for Chinese analysts}
+Are Chinese analysts' forecasts conditionally biased relative to a look-ahead-free ML benchmark? Does the bias
+predict returns, and with which sign?
+&
+Extend the XGBoost model to the annual horizon, dated monthly to match the consensus. Define the bias as (analyst
+$-$ ML)/price. Form portfolios and run Fama--MacBeth regressions with CH-3/CH-4 alphas. Also study ``man + machine'':
+when do analysts add information beyond the model?
+&
+\inhand{} \texttt{eps\_12fwd}, annual EPS; the ML pipeline needs an annual-horizon target.
+&
+\citet{vanbinsbergen2023}; \citet{zhang2025}; \citet{liu2023pbfj}; \citet{cao2024}; \citet{campbell2026}
+&
+\emph{Finds:} in the US, analyst bias relative to ML predicts \emph{negative} returns \citep{vanbinsbergen2023}, but
+the alpha is attributed to look-ahead bias \citep{zhang2025}. In China, analysts' growth forecasts and their deviation
+from a statistical benchmark predict returns \emph{positively} \citep{liu2023pbfj}. \emph{Adds:} a clean, rolling ML
+benchmark that reconciles the opposite signs, and evidence on where human analysts add value in an emerging market.
+\emph{Risk:} \citet{liu2023pbfj} is close, so the contribution must be the ML benchmark and the look-ahead-free
+design.
+&
+\textbf{Supported, with the US sign.} XGBoost without analyst input beats the consensus (MAE 1.02\% vs 1.19\% of price). Analysts are optimistic by 0.66\% of price. Analyst-minus-ML bias predicts lower returns (EW CH-4 $\alpha=-0.83\%$/month, $t=-3.0$; FM $t=-3.0$), the opposite sign to Liu et al.\ (2023). The raw spread is insignificant, and the test needs FY-level I/B/E/S. \texttt{idea05\_ml\_analyst\_bias}\\[4pt]
+
+\idea{6}{Sticky expectations and the profitability anomaly}
+Can sticky analyst expectations explain the profitability (ROE) anomaly in Chinese stocks?
+&
+Follow \citet{bouchaud2019}. Estimate stickiness from consensus forecast errors on forecast revisions. Test whether
+consensus errors are predictable from current ROE, and whether the profitability premium is larger where
+expectations are stickier and profits more persistent.
+&
+\inhand{} EPS and book value (ROE), \texttt{eps\_12fwd}, CH-4 factors.
+&
+\citet{bouchaud2019}; \citet{coibion2015}; \citet{bordalo2020}; \citet{lili2025}; \citet{liu2019}
+&
+\emph{Finds:} in the US, stickiness explains the profitability anomaly \citep{bouchaud2019}. In China, consensus
+forecasts underreact and individual analysts overreact \citep{lili2025}, but that study does not link expectations to
+returns. \emph{Adds:} the first China test of the sticky-expectations explanation of an anomaly. The asset-pricing
+link is what makes it publishable beyond \citet{lili2025}.
+&
+\textbf{Mixed.} The consensus underreacts (CG slope 0.14, $t=2.5$; 0.28 where revisions are autocorrelated). The profitability premium exists (Q5$-$Q1 0.90\%/month, $t=3.3$), and analysts are relatively pessimistic about profitable firms ($t=2.0$). But stickiness does not change the premium. Side finding: ROE built from the I/B/E/S trailing field reverses sign, reflecting analyst optimism. Needs analyst-level data; could merge with Idea~5. \texttt{idea06\_sticky\_expectations}\\[4pt]
+
+\idea{7}{The fourth-quarter earnings dip}
+Do analysts and investors anticipate the systematic fourth-quarter earnings shortfall of Chinese firms?
+&
+Document Q4 EPS relative to the Q1--Q3 run rate. Test whether the consensus FY forecast made in Nov--Jan, after the
+Q3 report, is too high by a predictable amount (firm's past Q4 pattern, size, loss history). Test whether an ML
+forecast of the dip predicts returns around the annual report.
+&
+\inhand{} Quarterly EPS and dates, consensus EPS.
+&
+\citet{das2009}; \citet{jacob2007}; \citet{kapons2024}; \citet{lin2020}; \citet{fan2015}
+&
+\emph{Finds:} Q4 earnings reverse and are managed in the US and Taiwan \citep{das2009,jacob2007,lin2020}. US Q4
+earnings are about half the Q1--Q3 average \citep{kapons2024}. Chinese firms manage earnings around regulatory
+thresholds \citep{fan2015}. \emph{Adds:} no China study of whether the seasonal dip is anticipated. This is a
+concrete forecasting question that tests for a predictable bias in analysts' forecasts and checks whether prices
+correct it.
+&
+\textbf{Not supported as stated.} There is no structural Q4 dip in China: about half of firms fall below their Q1--Q3 average in normal years. Dips cluster in bad years (2008; the 2018 goodwill wave) and in loss firms, and neither SRW nor XGBoost is biased for Q4. A narrow result remains: a large dip last year lowers returns at the annual report ($t=4.9$). The analyst test needs FY consensus. \texttt{idea07\_q4\_dip}\\[4pt]
+
+\idea{8}{Do LLM forecasters inherit the gambler's fallacy?}
+Do LLM earnings forecasts, given anonymised earnings histories, show human expectation biases? Are they a useful proxy
+for retail investors' expectations?
+&
+Feed anonymised EPS sequences, with no names or dates, to one or more LLMs and elicit next-quarter EPS or its
+direction. Measure responses to streaks and reversals. Compare accuracy and bias with XGBoost and analysts. Test
+whether the ``LLM surprise'' explains returns better than statistical surprises, treating the LLM as a synthetic
+naive investor.
+&
+\inhand{} Plus LLM API access (paid; Claude or an open-weight model).
+&
+\citet{kim2024llm}; \citet{lopezlira2023}; \citet{bybee2023}; \citet{glasserman2024}; \citet{cao2026foreign}
+&
+\emph{Finds:} LLMs can analyse financial statements and predict earnings direction \citep{kim2024llm}. LLM
+expectations resemble human survey expectations \citep{bybee2023}. Look-ahead leakage is a key threat
+\citep{glasserman2024}, and ChatGPT is biased on Chinese firms \citep{cao2026foreign}. \emph{Adds:} whether LLMs
+reproduce the gambler's fallacy in a real forecasting task is open. Anonymisation addresses leakage. \emph{Risk:} a
+fast-moving field; likely venues are top field journals rather than the top three finance journals.
+&
+\textbf{Not supported as stated.} 320 anonymised EPS histories, stratified by streak; Claude Haiku and Sonnet via the CLI (\$3.65). Neither model shows the gambler's fallacy. Haiku is conservative: its probabilities stay at 46--59\% and barely move with streaks. Sonnet extrapolates at about two-thirds of the realised slope ($t=3.9$) and has a lower median point error than XGBoost (36.4 vs 39.8). Underreaction shrinks with model capability; the protocol is reusable. \texttt{idea08\_llm\_gamblers\_fallacy}\\[4pt]
+
+\multicolumn{6}{@{}l}{\textbf{C. Attention and information processing}}\\[2pt]
+
+\idea{9}{Bundled annual and Q1 reports}
+When a firm releases its annual report and Q1 report together (late April), do investors neglect one of the two
+earnings signals?
+&
+Identify same-day and same-week bundles from \texttt{date\_q4} and \texttt{date\_q1}. Compare the price response
+and drift for each surprise when bundled and when released separately. Test which signal is neglected (salience
+of the annual report against recency of Q1). Examine whether firms bundle strategically when one signal is bad.
+&
+\inhand{} Exact dates and both surprises. Daily returns via Eikon would sharpen the announcement window \ext.
+&
+\citet{hirshleifer2003}; \citet{hirshleifer2009}; \citet{dellavigna2009}; \citet{you2011}; \citet{cohen2012}
+&
+\emph{Finds:} limited attention weakens immediate reactions and strengthens drift, including in China, where same-day
+clustering across firms has this effect \citep{hirshleifer2009,you2011}. \emph{Adds:} two signals from the
+\emph{same} firm at once give a within-firm test of limited attention, cleaner than cross-firm clustering. China's
+reporting calendar makes this case common, and the existing project already flags it as a data issue.
+&
+\textbf{Supported.} 24k firm-years; same-day bundling rose from 4\% to 49\%. When the reports are bundled, the response to the annual surprise roughly halves (0.56 to 0.29, $t=-3.1$; SRW $t=-3.4$), while the Q1 response is unchanged. There is no significant extra drift. Firms with bad annual news bundle more (+3.7--5.3 pp, $t\geq5.6$). Most promising in C. \texttt{idea09\_bundled\_reports}\\[4pt]
+
+\idea{10}{Disposition effect and earnings news}
+Does the capital-gains overhang of the (largely retail) shareholder base set the speed at which earnings news and
+streaks enter prices?
+&
+Build the turnover-weighted reference price of \citet{grinblatt2005} from monthly prices and turnover and compute
+the capital-gains overhang (CGO). Test whether drift is strongest when the news and the CGO have the same sign
+\citep{frazzini2006}. Extension: positive-streak stocks tend to carry gains, so CGO is also an alternative
+explanation, or channel, for the streak result.
+&
+\inhand{} Price, turnover, shares outstanding, SUE.
+&
+\citet{shefrin1985}; \citet{grinblatt2005}; \citet{frazzini2006}; \citet{an2016}; \citet{chen2022attn}
+&
+\emph{Finds:} in the US, drift is largest when the news and unrealised gains share a sign \citep{frazzini2006}. In
+China, retail attention raises drift, especially near the 52-week high \citep{chen2022attn}. \emph{Adds:} no direct
+China test was found. High turnover makes a turnover-based reference price more accurate in China than in the US.
+The test doubles as a robustness check for the gambler's-fallacy paper.
+&
+\textbf{Partly supported.} 96k announcements. The PEAD spread rises with the capital-gains overhang, from 1.5\% to 2.6\% over three months (difference 1.1\%, $t=2.0$), driven by good news on stocks with gains. Bad news on losers does not drift more, and the continuous FM interaction is insignificant. CGO does not explain the streak result. Better as a mechanism or robustness section. \texttt{idea10\_disposition\_cgo}\\[4pt]
+
+\idea{11}{Waves of inexperienced investors}
+Is underreaction to earnings (PEAD and streak underreaction) stronger when many new, inexperienced investors enter
+the market?
+&
+Use monthly new A-share account openings as a time series. Interact them with SUE, and with SUE $\times$ streak, in
+Fama--MacBeth regressions, or regress the monthly PEAD long--short return on account growth. Compare the
+2007, 2015 and 2020 entry waves.
+&
+\inhand{} Plus market-wide monthly new-account statistics (CSDC, public; also via akshare/Eastmoney). No firm codes
+needed.
+&
+\citet{greenwood2009}; \citet{gao2023newinv}; \citet{sun2023}; \citet{chen2022attn}; \citet{liao2022}
+&
+\emph{Finds:} inexperienced investors amplify bubbles \citep{greenwood2009}. In China, new investors' entries and net
+buying predict negative returns and explain daily momentum \citep{gao2023newinv}. Drift is larger in high-sentiment
+periods \citep{sun2023}. \emph{Adds:} the processing of earnings news as a function of investor inexperience has not
+been studied. The identification is simple and the data are easy to obtain.
+&
+\textbf{Not supported.} New-investor inflow (CSDC, 2015--20, 48 announcement months) and an abnormal-turnover proxy (2005--20) do not change the announcement response or the drift. If anything, drift is weaker in high-inflow months (0.08\% vs 1.08\%). Needs the pre-2015 weekly series. Lowest priority in C. \texttt{idea11\_new\_investors}\\[4pt]
+
+\multicolumn{6}{@{}l}{\textbf{D. Disclosure regulation}}\\[2pt]
+
+\idea{12}{Mandatory earnings preannouncements}
+Does China's mandatory preannouncement rule, triggered by a change in net income of 50\% or more, speed up price
+discovery and reduce PEAD?
+&
+Run a fuzzy regression discontinuity around the $+50\%$ threshold of the year-on-year earnings change. Firms just
+above it must preannounce in January; firms just below need not. Compare announcement reactions and drift after the
+formal report. Use the $+50\%$ side because bunching is documented at $-50\%$.
+&
+\ext{} Preannouncement records (CNINFO or Eastmoney via akshare); requires stock codes.
+&
+\citet{kasznik1995}; \citet{fan2015}; \citet{lee2010}
+&
+\emph{Finds:} firms manipulate earnings to avoid the $-50\%$ trigger but not at $+50\%$ \citep{fan2015}. Mandatory
+forecasts carry information. \emph{Adds:} no RD estimate of the rule's effect on price efficiency was found. This is
+policy-relevant evidence on mandatory early disclosure in a retail market.
+&
+\emph{Not tested in this PoC round.} Section D; needs stock codes.\\
+
+\end{longtable}
+}
+
+\section*{Table 2. Ideas screened out (largely answered, or not feasible with these data)}
+
+{\footnotesize
+\begin{longtable}{@{}L{6.5cm}L{12.5cm}L{5.5cm}@{}}
+\toprule
+\textbf{Question} & \textbf{Why dropped} & \textbf{Key reference}\\
+\midrule
+\endhead
+Same-day announcement clustering and distraction in China & Weaker immediate reaction and stronger drift already
+shown for China. Idea~9 keeps only the within-firm bundling angle. & \citet{you2011}; \citet{shu2022}\\
+Weekday and holiday announcements & Weekday and concentration effects and a Tomb-Sweeping Day study already exist
+for China, and monthly returns are too coarse. & \citet{you2011}\\
+Stock Connect inclusion and PEAD & Several studies show PEAD declines after the Shanghai and Shenzhen Connect
+launches. & \citet{cai2021} (institutions); Connect event studies\\
+Earnings-announcement premium and CAR predictability & Documented internationally and for China. &
+\citet{barber2013}; \citet{sun2023}\\
+Late announcements as bad news & Documented in the US, and partly for China. Timing could instead be a feature in
+the ML forecasts (Idea~4). & \citet{wang2008}\\
+Analyst dispersion and short-sale constraints & The 2010 margin pilot's effects on analyst forecasts and price
+efficiency are documented. & \citet{chang2014}; \citet{li2019short}\\
+ML return prediction in China & Comprehensively done. & \citet{leippold2022}\\
+Salience-theory and MAX/lottery effects & Done internationally, including China. & \citet{cakici2022};
+\citet{nartea2017}\\
+Consensus information rigidity (CG regressions) alone & Done for China. Kept only through the asset-pricing link
+(Idea~6). & \citet{lili2025}\\
+Nominal EPS illusion after bonus-share issues & Not feasible: in the panel, \texttt{basiceps} equals the adjusted
+\texttt{eps} in 99.8\% of cases, so headline and adjusted EPS cannot be separated. & \citet{shue2021}\\
+\bottomrule
+\end{longtable}
+}
+
+\section*{Status after the proof-of-concept round}
+
+\textbf{Strongest results.} \textbf{Idea~9} (bundled reports) gives a new, clean attention test with a robust first
+result: the response to the annual surprise halves when it is released with the Q1 report, plus a strategic-bundling
+angle. \textbf{Idea~5} (machine benchmark for analysts) gives a significant, US-signed conditional-bias alpha that
+contradicts the existing China evidence. \textbf{Idea~4} (whose expectations) is best reframed as slow incorporation
+of predictable earnings information.
+
+\textbf{Useful but secondary.} Idea~6 (stickiness is confirmed, but it does not explain the profitability anomaly;
+it could merge with Idea~5). Idea~10 (an upside-only disposition effect in PEAD; best as a mechanism or robustness
+section). Idea~8 (no gambler's fallacy in LLMs, but a reusable, leakage-robust protocol and a capability gradient).
+
+\textbf{Weak on these data.} Idea~7 (no structural Q4 dip) and Idea~11 (no effect of new-investor waves; the series
+is too short).
+
+\textbf{Main data upgrades.} Daily returns and six-digit stock codes from Eikon (Ideas 4, 9, 12), fiscal-year I/B/E/S
+consensus with analyst counts and detail data (Ideas 1, 5, 6, 7), and the pre-2015 CSDC weekly series (Idea~11).
+Sections A and D (Ideas 1--3 and 12) remain untested; Idea~1 fits naturally with the analyst panel built for Ideas
+5 and 6.
+
+\begin{thebibliography}{99}
+\bibitem[Abarbanell and Bernard(1992)]{abarbanell1992} Abarbanell, J.~S. and V.~L. Bernard (1992). Tests of analysts'
+overreaction/underreaction to earnings information as an explanation for anomalous stock price behavior.
+\emph{Journal of Finance} 47(3), 1181--1207.
+\bibitem[An(2016)]{an2016} An, L. (2016). Asset pricing when traders sell extreme winners and losers. \emph{Review of
+Financial Studies} 29(3), 823--861.
+\bibitem[Ball and Bartov(1996)]{ball1996} Ball, R. and E. Bartov (1996). How naive is the stock market's use of
+earnings information? \emph{Journal of Accounting and Economics} 21(3), 319--337.
+\bibitem[Barber et~al.(2013)]{barber2013} Barber, B.~M., E.~T. De~George, R. Lehavy, and B. Trueman (2013). The
+earnings announcement premium around the globe. \emph{Journal of Financial Economics} 108(1), 118--138.
+\bibitem[Bernard and Thomas(1990)]{bernard1990} Bernard, V.~L. and J.~K. Thomas (1990). Evidence that stock prices
+do not fully reflect the implications of current earnings for future earnings. \emph{Journal of Accounting and
+Economics} 13(4), 305--340.
+\bibitem[Birru(2015)]{birru2015} Birru, J. (2015). Psychological barriers, expectational errors, and underreaction to
+news. Working paper, Ohio State University.
+\bibitem[Bordalo et~al.(2020)]{bordalo2020} Bordalo, P., N. Gennaioli, Y. Ma, and A. Shleifer (2020). Overreaction in
+macroeconomic expectations. \emph{American Economic Review} 110(9), 2748--2782.
+\bibitem[Bouchaud et~al.(2019)]{bouchaud2019} Bouchaud, J.-P., P. Krueger, A. Landier, and D. Thesmar (2019). Sticky
+expectations and the profitability anomaly. \emph{Journal of Finance} 74(2), 639--674.
+\bibitem[Burgstahler and Dichev(1997)]{burgstahler1997} Burgstahler, D. and I. Dichev (1997). Earnings management to
+avoid earnings decreases and losses. \emph{Journal of Accounting and Economics} 24(1), 99--126.
+\bibitem[Bybee(2023)]{bybee2023} Bybee, L. (2023). Surveying generative AI's economic expectations. Working paper.
+\bibitem[Cai et~al.(2021)]{cai2021} Cai, J., Z. Lin, Y. Wei, and X. Xu (2021). The role of institutional investors in
+post-earnings announcement drift: Evidence from China. \emph{Accounting and Business Research} 51(2), 206--236.
+\bibitem[Cakici and Zaremba(2022)]{cakici2022} Cakici, N. and A. Zaremba (2022). Salience theory and the
+cross-section of stock returns: International and further evidence. \emph{Journal of Financial Economics} 146(2),
+689--725.
+\bibitem[Campbell et~al.(2026)]{campbell2026} Campbell, J.~L., H. Ham, Z. Lu, and K. Wood (2026). Expectations matter:
+When (not) to use machine learning earnings forecasts. \emph{Management Science}, forthcoming
+(doi:10.1287/mnsc.2024.05808).
+\bibitem[Cao et~al.(2024)]{cao2024} Cao, S., W. Jiang, J. Wang, and B. Yang (2024). From man vs.\ machine to man +
+machine: The art and AI of stock analyses. \emph{Journal of Financial Economics} 160, 103910.
+\bibitem[Cao et~al.(2026)]{cao2026foreign} Cao, S., C.~C.~Y. Wang, and L. Yi (2026). Foreign bias in large language
+models: Evidence from ChatGPT and DeepSeek on Chinese firms. Working paper.
+\bibitem[Chang et~al.(2014)]{chang2014} Chang, E.~C., Y. Luo, and J. Ren (2014). Short-selling, margin-trading, and
+price efficiency: Evidence from the Chinese market. \emph{Journal of Banking \& Finance} 48, 411--424.
+\bibitem[Chen et~al.(2016)]{chen2016gf} Chen, D.~L., T.~J. Moskowitz, and K. Shue (2016). Decision making under the
+gambler's fallacy: Evidence from asylum judges, loan officers, and baseball umpires. \emph{Quarterly Journal of
+Economics} 131(3), 1181--1242.
+\bibitem[Chen et~al.(2022a)]{chen2022ml} Chen, X., Y.~H. Cho, Y. Dou, and B. Lev (2022). Predicting future earnings
+changes using machine learning and detailed financial data. \emph{Journal of Accounting Research} 60(2), 467--515.
+\bibitem[Chen et~al.(2022b)]{chen2022attn} Chen, X., X. Diao, and C. Wu (2022). Heterogeneous investor attention and
+post earnings announcement drift: Evidence from China. \emph{Economic Modelling} 110, 105796.
+\bibitem[Cohen and Lou(2012)]{cohen2012} Cohen, L. and D. Lou (2012). Complicated firms. \emph{Journal of Financial
+Economics} 104(2), 383--400.
+\bibitem[Coibion and Gorodnichenko(2015)]{coibion2015} Coibion, O. and Y. Gorodnichenko (2015). Information rigidity
+and the expectations formation process. \emph{American Economic Review} 105(8), 2644--2678.
+\bibitem[Das et~al.(2009)]{das2009} Das, S., P.~K. Shroff, and H. Zhang (2009). Quarterly earnings patterns and
+earnings management. \emph{Contemporary Accounting Research} 26(3), 797--831.
+\bibitem[Degeorge et~al.(1999)]{degeorge1999} Degeorge, F., J. Patel, and R. Zeckhauser (1999). Earnings management
+to exceed thresholds. \emph{Journal of Business} 72(1), 1--33.
+\bibitem[DellaVigna and Pollet(2009)]{dellavigna2009} DellaVigna, S. and J.~M. Pollet (2009). Investor inattention and
+Friday earnings announcements. \emph{Journal of Finance} 64(2), 709--749.
+\bibitem[Fan et~al.(2015)]{fan2015} Fan, Y., W.~B. Thomas, and C. Wang (2015). The effect of regulatory benchmarks on
+firm reporting behavior. \emph{Journal of International Accounting Research} 14(1), 85--107.
+\bibitem[Fan et~al.(2024)]{fan2024} Fan, R., X. Xiong, Y. Li, and Y. Gao (2024). Analysts' forecast anchoring and
+discontinuous market reaction: Evidence from China. \emph{European Journal of Finance} 30(14), 1676--1701.
+\bibitem[Frazzini(2006)]{frazzini2006} Frazzini, A. (2006). The disposition effect and underreaction to news.
+\emph{Journal of Finance} 61(4), 2017--2046.
+\bibitem[Gao et~al.(2023)]{gao2023newinv} Gao, Z., W. Jiang, W.~A. Xiong, and W. Xiong (2023). Daily momentum and new
+investors in an emerging stock market. NBER Working Paper 31839.
+\bibitem[Garfinkel and Sokobin(2006)]{garfinkel2006} Garfinkel, J.~A. and J. Sokobin (2006). Volume, opinion
+divergence, and returns: A study of post-earnings announcement drift. \emph{Journal of Accounting Research} 44(1),
+85--112.
+\bibitem[George and Hwang(2004)]{george2004} George, T.~J. and C.-Y. Hwang (2004). The 52-week high and momentum
+investing. \emph{Journal of Finance} 59(5), 2145--2176.
+\bibitem[Glasserman and Lin(2024)]{glasserman2024} Glasserman, P. and C. Lin (2024). Assessing look-ahead bias in
+stock return predictions generated by GPT sentiment analysis. \emph{Journal of Financial Data Science} 6(1), 25--42.
+\bibitem[Greenwood and Nagel(2009)]{greenwood2009} Greenwood, R. and S. Nagel (2009). Inexperienced investors and
+bubbles. \emph{Journal of Financial Economics} 93(2), 239--258.
+\bibitem[Grinblatt and Han(2005)]{grinblatt2005} Grinblatt, M. and B. Han (2005). Prospect theory, mental accounting,
+and momentum. \emph{Journal of Financial Economics} 78(2), 311--339.
+\bibitem[Hirshleifer et~al.(2009)]{hirshleifer2009} Hirshleifer, D., S.~S. Lim, and S.~H. Teoh (2009). Driven to
+distraction: Extraneous events and underreaction to earnings news. \emph{Journal of Finance} 64(5), 2289--2325.
+\bibitem[Hirshleifer and Teoh(2003)]{hirshleifer2003} Hirshleifer, D. and S.~H. Teoh (2003). Limited attention,
+information disclosure, and financial reporting. \emph{Journal of Accounting and Economics} 36(1--3), 337--386.
+\bibitem[Hunt et~al.(2022)]{hunt2022} Hunt, J.~O.~S., J.~N. Myers, and L.~A. Myers (2022). Improving earnings
+predictions and abnormal returns with machine learning. \emph{Accounting Horizons} 36(1), 131--149.
+\bibitem[Jacob and Jorgensen(2007)]{jacob2007} Jacob, J. and B.~N. Jorgensen (2007). Earnings management and
+accounting income aggregation. \emph{Journal of Accounting and Economics} 43(2--3), 369--390.
+\bibitem[Kandel and Pearson(1995)]{kandel1995} Kandel, E. and N.~D. Pearson (1995). Differential interpretation of
+public signals and trade in speculative markets. \emph{Journal of Political Economy} 103(4), 831--872.
+\bibitem[Kapons and Binz(2024)]{kapons2024} Kapons, M. and O. Binz (2024). What's behind the fourth-quarter earnings
+dip? Working paper.
+\bibitem[Kasznik and Lev(1995)]{kasznik1995} Kasznik, R. and B. Lev (1995). To warn or not to warn: Management
+disclosures in the face of an earnings surprise. \emph{The Accounting Review} 70(1), 113--134.
+\bibitem[Kim et~al.(2024)]{kim2024llm} Kim, A., M. Muhn, and V. Nikolaev (2024). Financial statement analysis with
+large language models. Working paper, University of Chicago.
+\bibitem[Lee and Lemieux(2010)]{lee2010} Lee, D.~S. and T. Lemieux (2010). Regression discontinuity designs in
+economics. \emph{Journal of Economic Literature} 48(2), 281--355.
+\bibitem[Leippold et~al.(2022)]{leippold2022} Leippold, M., Q. Wang, and W. Zhou (2022). Machine learning in the
+Chinese stock market. \emph{Journal of Financial Economics} 145(2), 64--82.
+\bibitem[Li and Li(2025)]{lili2025} Li, L. and G. Li (2025). Information rigidity: Comparing average and individual
+forecasts of analysts of Chinese A-share listed companies. \emph{International Review of Economics \& Finance} 104,
+104732.
+\bibitem[Li et~al.(2019)]{li2019short} Li, Y., Y. Li, C. Lin, and X. Xu (2019). The effect of short sale constraints on
+analyst forecast quality: Evidence from a natural experiment in China. \emph{Economic Modelling} 81, 338--347.
+\bibitem[Li and Yu(2012)]{li2012anchor} Li, J. and J. Yu (2012). Investor attention, psychological anchors, and stock
+return predictability. \emph{Journal of Financial Economics} 104(2), 401--419.
+\bibitem[Liao et~al.(2022)]{liao2022} Liao, J., C. Peng, and N. Zhu (2022). Extrapolative bubbles and trading volume.
+\emph{Review of Financial Studies} 35(4), 1682--1722.
+\bibitem[Lin and Lai(2020)]{lin2020} Lin, Y. and S. Lai (2020). Fourth-quarter earnings management and the kink in
+annual earnings: Evidence from Taiwan. \emph{Emerging Markets Finance and Trade} 56(5), 1073--1092.
+\bibitem[Liu et~al.(2019)]{liu2019} Liu, J., R.~F. Stambaugh, and Y. Yuan (2019). Size and value in China.
+\emph{Journal of Financial Economics} 134(1), 48--69.
+\bibitem[Liu et~al.(2023)]{liu2023pbfj} Liu, L.~X., Y. Zhu, X. Zhang, and Y. Zhang (2023). Expectation disarray:
+Analysts' growth forecast anomaly in China. \emph{Pacific-Basin Finance Journal} 82, 102192.
+\bibitem[Loh and Warachka(2012)]{loh2012} Loh, R.~K. and M. Warachka (2012). Streaks in earnings surprises and the
+cross-section of stock returns. \emph{Management Science} 58(7), 1305--1321.
+\bibitem[Lopez-Lira and Tang(2023)]{lopezlira2023} Lopez-Lira, A. and Y. Tang (2023). Can ChatGPT forecast stock price
+movements? Return predictability and large language models. Working paper.
+\bibitem[Mendenhall(1991)]{mendenhall1991} Mendenhall, R.~R. (1991). Evidence on the possible underweighting of
+earnings-related information. \emph{Journal of Accounting Research} 29(1), 170--179.
+\bibitem[Nartea et~al.(2017)]{nartea2017} Nartea, G.~V., D. Kong, and J. Wu (2017). Do extreme returns matter in
+emerging markets? Evidence from the Chinese stock market. \emph{Journal of Banking \& Finance} 76, 189--197.
+\bibitem[Rabin and Vayanos(2010)]{rabin2010} Rabin, M. and D. Vayanos (2010). The gambler's and hot-hand fallacies:
+Theory and applications. \emph{Review of Economic Studies} 77(2), 730--778.
+\bibitem[Shefrin and Statman(1985)]{shefrin1985} Shefrin, H. and M. Statman (1985). The disposition to sell winners too
+early and ride losers too long. \emph{Journal of Finance} 40(3), 777--790.
+\bibitem[Shu and Tan(2022)]{shu2022} Shu, H. and W. Tan (2022). Investor limited attention, opinion divergence, and
+post-earnings-announcement drift: Evidence from China. \emph{Emerging Markets Finance and Trade} 58(14), 3985--4000.
+\bibitem[Shue and Townsend(2021)]{shue2021} Shue, K. and R.~R. Townsend (2021). Can the market multiply and divide?
+Non-proportional thinking in financial markets. \emph{Journal of Finance} 76(5), 2307--2357.
+\bibitem[Sun and Wen(2023)]{sun2023} Sun, P.-W. and Z. Wen (2023). Stock return predictability of the cumulative
+abnormal returns around the earnings announcement date: Evidence from China. \emph{International Review of
+Finance} 23(1), 58--86.
+\bibitem[van Binsbergen et~al.(2023)]{vanbinsbergen2023} van Binsbergen, J.~H., X. Han, and A. Lopez-Lira (2023). Man
+versus machine learning: The term structure of earnings expectations and conditional biases. \emph{Review of
+Financial Studies} 36(6), 2361--2396.
+\bibitem[Wang et~al.(2008)]{wang2008} Wang, X., J. Gu, and C. Chen (2008). Timeliness of annual reports, management
+disclosure and information transparency: Evidence from China. SSRN Working Paper 1143213.
+\bibitem[You and Zhang(2011)]{you2011} You, H. and X.-J. Zhang (2011). Limited attention and stock price drift
+following earnings announcements and 10-K filings. \emph{China Finance Review International} 1(4), 358--387.
+\bibitem[Zhang et~al.(2025)]{zhang2025} Zhang, Y., Y. Zhu, and J.~T. Linnainmaa (2025). Man versus machine learning
+revisited. \emph{Review of Financial Studies} 38(12), 3768--3790.
+\end{thebibliography}
+
+\end{document}
