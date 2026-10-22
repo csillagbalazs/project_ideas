@@ -1,0 +1,4 @@
+interface:
+  display_name: "Paper Voice Review"
+  short_description: "Review papers for voice and AI-style signals"
+  default_prompt: "Use $paper-voice-review to review my manuscript for AI-style signals and consistency with my author voice."

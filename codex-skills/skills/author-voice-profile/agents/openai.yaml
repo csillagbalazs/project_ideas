@@ -1,0 +1,4 @@
+interface:
+  display_name: "Author Voice Profile"
+  short_description: "Build a profile from your own writing"
+  default_prompt: "Use $author-voice-profile to refresh my writing-style profile from the ai_style folder in Google Drive."
