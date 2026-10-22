@@ -60,3 +60,18 @@ def analyst_panel() -> pd.DataFrame:
     m["bp"] = np.exp(m.bm)
     m = m[m.eps_12fwd.notna() & (m.price > 0)]
     return attach_last_announcement(m)
+
+
+def abnormal_turnover() -> pd.Series:
+    """Abnormal log turnover indexed by (permno, month traded).
+
+    Row m of the monthly panel holds month m-1 turnover, so the series is re-dated to the month
+    in which the trading happened. Abnormal = log turnover minus the firm's mean over months -12..-2.
+    """
+    m = monthly_panel()[["permno", "mi", "turnover"]].copy()
+    m["mi"] = m.mi - 1
+    m["lto"] = np.log(m.turnover.where(m.turnover > 0))
+    m = m.sort_values(["permno", "mi"])
+    base = m.groupby("permno").lto.transform(lambda s: s.shift(2).rolling(11, min_periods=6).mean())
+    m["abto"] = m.lto - base
+    return m.set_index(["permno", "mi"]).abto

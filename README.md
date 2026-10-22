@@ -1,10 +1,13 @@
 # Project ideas: proofs of concept
 
 `research_ideas.tex` lists the candidate questions. The last column summarises the proof-of-concept
-(PoC) results for Sections B and C. Each tested idea has its own folder:
+(PoC) results for Sections A, B and C. Each tested idea has its own folder:
 
 | Folder | Idea |
 |---|---|
+| `idea01_analyst_gamblers_fallacy` | Do analysts commit the gambler's fallacy? |
+| `idea02_streak_disagreement` | Do earnings streaks create disagreement (turnover, analyst dispersion)? |
+| `idea03_record_earnings` | Are record earnings a reference point (RD at the trailing-EPS record)? |
 | `idea04_whose_expectations` | Whose earnings expectations do prices reflect (SRW vs XGBoost)? |
 | `idea05_ml_analyst_bias` | Machine benchmark for Chinese analysts: conditional bias and returns |
 | `idea06_sticky_expectations` | Sticky analyst expectations and the profitability anomaly |

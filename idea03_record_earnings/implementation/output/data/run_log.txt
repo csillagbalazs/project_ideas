@@ -1,0 +1,178 @@
+/opt/homebrew/anaconda3/envs/eps-forecast/lib/python3.12/site-packages/numpy/lib/nanfunctions.py:1215: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis, out=out, keepdims=keepdims)
+/opt/homebrew/anaconda3/envs/eps-forecast/lib/python3.12/site-packages/numpy/lib/nanfunctions.py:1215: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis, out=out, keepdims=keepdims)
+/opt/homebrew/anaconda3/envs/eps-forecast/lib/python3.12/site-packages/numpy/lib/nanfunctions.py:1215: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis, out=out, keepdims=keepdims)
+
+=== s00_build_sample.py ===
+                                                  step      n
+              Reports with an SRW surprise, 2005--2020 106679
+Four consecutive quarters, now and one quarter earlier 104661
+    At least eight earlier TTM values (record defined)  95807
+                                       Positive record  95721
+        Not an exact tie with the record (main sample)  95270
+records 19316 at-record share of records 0.718
+
+=== s01_descriptives.py ===
+example {'name': 'WULIANGYE YIBIN', 'fyear': 2018, 'fqtr': 1, 'eps_actual': 1.3, 'eps_lag4': 0.947, 'ttm_prev': 2.549, 'prevmax': 2.813, 'ttm': 2.902, 'sue': 3.7367575836420444, 'gap': 2.7946289010807375, 'r': 0.9421286825613081}
+       ext      n  reg
+year                  
+2005  14.8    887  6.3
+2006  14.1   2829  6.5
+2007  22.1   3451  9.6
+2008  24.9   3995  7.7
+2009  10.2   4248  6.0
+2010  18.7   4667  7.2
+2011  20.8   5125  7.5
+2012  11.9   5242  5.0
+2013  13.2   6057  4.7
+2014  14.6   6952  4.5
+2015  13.4   7647  5.2
+2016  12.8   7849  5.2
+2017  15.7   8054  5.8
+2018  16.1   8660  5.9
+2019  11.5   9191  4.5
+2020   9.9  10416  5.2
+
+=== s02_naive.py ===
+ar0 h=1.0 n=22753: jump -0.13 (-0.44) kink 1.08 (1.45)
+ar0 h=2.0 n=39200: jump 0.02 (0.08) kink 0.76 (2.65)
+car1_3 h=1.0 n=22182: jump 0.34 (0.72) kink 3.09 (2.51)
+car1_3 h=2.0 n=38198: jump 0.19 (0.54) kink 1.45 (2.68)
+car1_3 h=1.0 n=12182: jump 1.06 (1.47) kink 0.34 (0.19)
+car1_3 h=2.0 n=23543: jump 0.74 (1.38) kink 0.41 (0.50)
+cov size: jump 0.123 (3.40) kink 0.741 (5.56)
+cov mom: jump 2.256 (1.28) kink -5.632 (-0.80)
+cov pth: jump 0.011 (2.26) kink 0.022 (1.46)
+cov prev_sue: jump 0.226 (3.53) kink -0.484 (-3.89)
+cov car_pre: jump 0.297 (0.69) kink 0.832 (0.75)
+
+=== s03_moving_cutoff.py ===
+ar0      h1    0.34 ( 0.71) n=9859 | h2    0.29 ( 0.84) | q2    0.41 ( 0.81)
+car1_3   h1    0.87 ( 1.20) n=9573 | h2    0.60 ( 1.06) | q2    0.89 ( 1.15)
+car1_6   h1   -1.74 (-1.64) n=9276 | h2   -1.21 (-1.51) | q2   -2.01 (-1.78)
+abto0    h1   -0.73 (-0.22) n=9282 | h2   -2.26 (-0.92) | q2   -0.47 (-0.14)
+rev      h1   -1.92 (-0.91) n=3273 | h2   -0.53 (-0.33) | q2   -1.62 (-0.68)
+next_sue h1   -0.08 (-1.28) n=9951 | h2   -0.10 (-1.80) | q2   -0.08 (-1.14)
+fut4     h1   -0.31 (-1.61) n=9149 | h2   -0.36 (-2.04) | q2   -0.33 (-1.56)
+bal size     h1   0.056 ( 1.09) | h2   0.066 ( 1.64)
+bal bm       h1  -0.029 (-0.76) | h2  -0.030 (-1.00)
+bal mom      h1   1.806 ( 0.72) | h2   2.473 ( 1.04)
+bal pth      h1  -0.001 (-0.17) | h2  -0.006 (-0.95)
+bal car_pre  h1  -0.413 (-0.61) | h2  -0.083 (-0.16)
+bal prev_sue h1  -0.033 (-0.75) | h2  -0.109 (-3.12)
+bal covered  h1  -0.002 (-0.09) | h2   0.008 ( 0.50)
+bal annual   h1   0.003 ( 0.17) | h2  -0.005 (-0.31)
+ERC {'ar0': 0.9701791432451544, 'car1_3': 1.1707790248515624} CI h1 {'ar0': -0.5977492725435982, 'car1_3': -0.5518344030187405} {'ar0': 1.2803677547393544, 'car1_3': 2.2932165199093975} CI h2 {'ar0': -0.3849304473577385, 'car1_3': -0.5067324819545072} {'ar0': 0.9665618190351831, 'car1_3': 1.7018119390355644}
+
+=== s04_at_record.py ===
+{'A': {'farbad': (0.72, 1.97), 'fargood': (1.66, 4.94), 'atbad': (1.9, 2.4), 'atgood': (2.59, 4.05)}, 'D': {'farbad': (1.57, 2.32), 'fargood': (2.44, 3.19), 'atbad': (-1.92, -1.59), 'atgood': (3.99, 3.58)}, 'N': {'farbad': (0.62, 5.39), 'fargood': (0.39, 6.5), 'atbad': (0.03, 0.17), 'atgood': (0.88, 10.13)}}
+ar0 1.0 () False {'D': (0.36, 1.65), 'DG': (-0.66, -1.58), 'xD': (0.95, 2.04), 'xDG': (-0.25, -0.21), 'x': (0.72, 1.97), 'xG': (1.19, 1.33)} 50620 10203
+car1_3 1.0 () False {'D': (0.16, 0.45), 'DG': (-0.06, -0.08), 'xD': (0.86, 0.98), 'xDG': (5.05, 2.92), 'x': (1.57, 2.32), 'xG': (-3.49, -2.42)} 48991 10000
+car1_3 2.0 () False {'D': (0.29, 1.01), 'DG': (-0.05, -0.08), 'xD': (0.92, 1.73), 'xDG': (1.94, 2.16), 'x': (1.07, 2.85), 'xG': (-1.57, -2.48)} 53624 14655
+car1_3 1.0 () True {'D': (0.35, 0.76), 'DG': (-0.3, -0.37), 'xD': (1.12, 0.85), 'xDG': (4.84, 2.31), 'x': (0.97, 0.95), 'xG': (-2.87, -1.75)} 26370 10000
+next_sue 1.0 () False {'D': (0.05, 1.96), 'DG': (-0.07, -1.04), 'xD': (-0.23, -1.58), 'xDG': (1.08, 6.26), 'x': (0.62, 5.39), 'xG': (-0.59, -3.94)} 51247 10263
+car1_3 1.0 ('next_sue',) False {'D': (0.1, 0.28), 'DG': (0.02, 0.02), 'xD': (1.01, 1.18), 'xDG': (3.84, 2.15), 'x': (1.0, 1.48), 'xG': (-2.94, -2.05)} 48819 9967
+
+=== s05_bunching.py ===
+r [(3.6, 1.11, 23096), (3.5, 0.7, 23096), (4.1, 1.56, 39814)]
+far [(5.7, 0.45, 1699), (-4.8, -0.31, 1699), (8.2, 0.68, 1699)]
+sue_at [(42.8, 4.83, 10212), (43.5, 2.9, 10212), (51.0, 7.78, 15027)]
+sue_below [(31.9, 3.89, 21323), (22.8, 5.44, 21323), (35.0, 3.23, 26667)]
+zero [(153.3, 11.04, 17802), (104.9, 8.27, 17802), (172.1, 13.67, 29117)]
+zero_fy [(1394.4, 26.05, 4535), (1231.5, 16.28, 4535), (1114.6, 32.86, 7076)]
+placebo {-2.0: (5.7, 1.88), -1.5: (-1.0, -0.39), -1.0: (-3.7, -1.06), -0.5: (18.0, 3.2), 0.5: (-16.6, -3.11), 1.0: (10.0, 2.71), 1.5: (-1.2, -0.26), 2.0: (4.0, 0.74)}
+
+=== s06_robustness.py ===
+                                                       row      y  jump     t     n
+Baseline ($h=1$, 0.25 SD surprise bins, triangular kernel)    ar0  0.34  0.71  9859
+Baseline ($h=1$, 0.25 SD surprise bins, triangular kernel) car1_3  0.87  1.20  9573
+Baseline ($h=1$, 0.25 SD surprise bins, triangular kernel)  abto0 -0.73 -0.22  9282
+                                         Bandwidth $h=0.5$    ar0  0.46  0.72  5556
+                                         Bandwidth $h=0.5$ car1_3  0.89  0.88  5395
+                                         Bandwidth $h=0.5$  abto0  2.34  0.54  5238
+                                           Bandwidth $h=2$    ar0  0.29  0.84 16931
+                                           Bandwidth $h=2$ car1_3  0.60  1.06 16441
+                                           Bandwidth $h=2$  abto0 -2.26 -0.92 15992
+                                    Local quadratic, $h=2$    ar0  0.41  0.81 16931
+                                    Local quadratic, $h=2$ car1_3  0.89  1.15 16441
+                                    Local quadratic, $h=2$  abto0 -0.47 -0.14 15992
+                                            Uniform kernel    ar0  0.31  0.70  9859
+                                            Uniform kernel car1_3  0.72  1.06  9573
+                                            Uniform kernel  abto0 -1.71 -0.56  9282
+                                   Surprise bins of 0.1 SD    ar0  0.46  0.96  9842
+                                   Surprise bins of 0.1 SD car1_3  0.79  1.08  9556
+                                   Surprise bins of 0.1 SD  abto0  0.14  0.04  9265
+                                   Surprise bins of 0.5 SD    ar0  0.46  0.94  9868
+                                   Surprise bins of 0.5 SD car1_3  1.07  1.48  9582
+                                   Surprise bins of 0.5 SD  abto0 -1.26 -0.39  9291
+                        Surprise bin $\times$ year effects    ar0  0.47  0.98  9724
+                        Surprise bin $\times$ year effects car1_3  1.12  1.51  9436
+                        Surprise bin $\times$ year effects  abto0  0.01  0.00  9150
+                                     XGBoost surprise bins    ar0  0.34  0.72 12511
+                                     XGBoost surprise bins car1_3  0.85  1.19 12143
+                                     XGBoost surprise bins  abto0 -2.05 -0.63 11746
+                                    Donut: drop $|r|<0.05$    ar0  0.25  0.51  9255
+                                    Donut: drop $|r|<0.05$ car1_3  1.63  2.07  8984
+                                    Donut: drop $|r|<0.05$  abto0 -2.27 -0.59  8726
+    Controls: previous SUE, size, momentum, price/52w high    ar0  0.39  0.80  9833
+    Controls: previous SUE, size, momentum, price/52w high car1_3  0.71  0.97  9548
+    Controls: previous SUE, size, momentum, price/52w high  abto0 -0.51 -0.16  9260
+                                               Small firms    ar0  0.35  0.41  4110
+                                               Small firms car1_3  1.02  1.08  3991
+                                               Small firms  abto0  3.36  0.70  3788
+                                               Large firms    ar0  0.37  0.65  5744
+                                               Large firms car1_3  0.65  0.55  5577
+                                               Large firms  abto0 -3.53 -0.97  5489
+                                                2005--2012    ar0  0.52  0.78  3985
+                                                2005--2012 car1_3  2.36  2.19  3981
+                                                2005--2012  abto0 -3.63 -0.94  3742
+                                                2013--2020    ar0  0.17  0.24  5865
+                                                2013--2020 car1_3 -0.25 -0.26  5583
+                                                2013--2020  abto0  0.88  0.18  5530
+                                            Annual reports    ar0  0.72  0.74  2590
+                                            Annual reports car1_3 -0.23 -0.18  2588
+                                            Annual reports  abto0  5.38  1.18  2426
+                                           Interim reports    ar0  0.16  0.30  7266
+                                           Interim reports car1_3  1.19  1.31  6982
+                                           Interim reports  abto0 -3.19 -0.79  6853
+                         Record set 8 or more quarters ago    ar0 -0.01 -0.01  4845
+                         Record set 8 or more quarters ago car1_3  1.21  1.26  4689
+                         Record set 8 or more quarters ago  abto0 -1.62 -0.35  4489
+                       Record set less than 8 quarters ago    ar0  0.75  1.11  5008
+                       Record set less than 8 quarters ago car1_3  0.60  0.59  4879
+                       Record set less than 8 quarters ago  abto0 -0.63 -0.15  4788
+                                       No analyst coverage    ar0  0.38  0.53  4971
+                                       No analyst coverage car1_3  1.37  1.43  4837
+                                       No analyst coverage  abto0 -3.23 -0.64  4563
+                                          Analyst coverage    ar0  0.23  0.36  4874
+                                          Analyst coverage car1_3  0.24  0.21  4722
+                                          Analyst coverage  abto0  1.00  0.28  4704
+                                 Single-quarter EPS record    ar0  0.21  0.46 17750
+                                 Single-quarter EPS record car1_3  0.17  0.26 17108
+                                 Single-quarter EPS record  abto0 -5.47 -2.36 16837
+    Year-to-date EPS record (same period of earlier years)    ar0 -0.26 -0.89 31415
+    Year-to-date EPS record (same period of earlier years) car1_3  0.77  1.88 30598
+    Year-to-date EPS record (same period of earlier years)  abto0 -0.37 -0.18 29459
+                        Annual EPS record (annual reports)    ar0  0.68  1.18  5035
+                        Annual EPS record (annual reports) car1_3 -0.48 -0.50  5034
+                        Annual EPS record (annual reports)  abto0  7.77  1.91  4723
+                              Zero earnings (TTM EPS $=0$)    ar0  0.86  1.73 17073
+                              Zero earnings (TTM EPS $=0$) car1_3 -0.86 -1.29 16590
+                              Zero earnings (TTM EPS $=0$)  abto0  7.88  1.97 15722
+                      Baseline at the true record, $h=0.5$    ar0  0.46  0.72  5556
+                      Baseline at the true record, $h=0.5$ car1_3  0.89  0.88  5395
+                      Baseline at the true record, $h=0.5$  abto0  2.34  0.54  5238
+                                         Placebo at $r=-1$    ar0 -1.13 -2.27  9939
+                                         Placebo at $r=-1$ car1_3  1.19  1.19  9651
+                                         Placebo at $r=-1$  abto0 -2.73 -0.93  9381
+                                       Placebo at $r=-0.5$    ar0 -0.72 -1.42  8979
+                                       Placebo at $r=-0.5$ car1_3  1.17  1.25  8704
+                                       Placebo at $r=-0.5$  abto0  1.82  0.50  8385
+                                       Placebo at $r=+0.5$    ar0  0.10  0.11  2582
+                                       Placebo at $r=+0.5$ car1_3 -1.85 -1.28  2500
+                                       Placebo at $r=+0.5$  abto0  8.96  1.34  2462
+                                         Placebo at $r=+1$    ar0  0.85  0.58  1442
+                                         Placebo at $r=+1$ car1_3  0.78  0.36  1392
+                                         Placebo at $r=+1$  abto0  9.68  1.30  1386

@@ -49,7 +49,7 @@ exchange codes. Ideas tagged \ext{} need a firm-level external merge (preannounc
 one-off re-export from Eikon with the local six-digit code or RIC. Ideas tagged \inhand{} need nothing beyond the
 current files. Idea~11 uses only a market-wide external series and needs no codes.
 
-\textbf{Proof-of-concept round (October 2026).} Ideas 4--11 (Sections B and C) were tested. The last column of
+\textbf{Proof-of-concept round (October 2026).} Ideas 1--11 (Sections A--C) were tested. The last column of
 Table~1 summarises the results, and each idea has a folder in \texttt{project\_ideas/} with the code, outputs and a
 one-page summary (\texttt{summary.pdf}). The PoCs uncovered three data facts that matter for any follow-up:
 (i) the quarterly EPS is bonus-adjusted to the 2021 share basis while prices and I/B/E/S fields are not; the
@@ -100,7 +100,7 @@ Analysts underreact to past earnings in general \citep{abarbanell1992}, and Chin
 separates expected reversal from generic underreaction and supplies a mechanism for the price result in the existing
 paper.
 &
-\emph{Not tested in this PoC round.} Section A.\\[4pt]
+\textbf{Partly supported.} 34k consensus revisions, 2005--20. Analysts do \emph{not} expect streaks to reverse: they revise more per unit of surprise after a streak continuation (+0.016 on 0.010, $t=4.9$). But their later forecast errors show extra underreaction to streak surprises (+0.10 on 0.21, $t=4.6$; XGBoost streaks $t=8.6$), concentrated in streaks of 2--3 and fading at 4+, the Rabin--Vayanos pattern. The price streak effect is weak in a simple specification ($t=1.5$, covered firms only), so mediation is untested. \texttt{idea01\_analyst\_gamblers\_fallacy}\\[4pt]
 
 \idea{2}{Streaks and disagreement}
 Do earnings streaks raise disagreement among investors, as heterogeneous gambler's-fallacy and hot-hand beliefs
@@ -120,7 +120,7 @@ in the US \citep{garfinkel2006} and in China \citep{shu2022}. \emph{Adds:} no st
 dispersion. This gives a price-independent test of the behavioural mechanism. Volume in a retail-dominated market
 mainly reflects retail beliefs, which helps identify them.
 &
-\emph{Not tested in this PoC round.} Section A.\\[4pt]
+\textbf{New fact, mechanism unclear.} 97k announcements. Good-news streaks raise abnormal turnover (+4.1\% at length 3, $t=4.2$) and widen the analyst forecast range. Bad-news streaks lower turnover, more the longer they run ($-5.4\%$ at length 4, $t=-4.2$), and narrow the range. Disagreement rises only for good-news streaks, which also fits the disposition effect. High turnover does not amplify the streak drift. \texttt{idea02\_streak\_disagreement}\\[4pt]
 
 \idea{3}{Record earnings as a reference point}
 Do investors treat a firm's historical-high (``record'') EPS as a reference point, so that surprises crossing the
@@ -141,7 +141,7 @@ predict returns \citep{george2004,li2012anchor}. \emph{Adds:} a firm-level \emph
 price anchor, has not been tested as a source of reference-dependent reactions and drift. The record is salient in
 Chinese financial media, which makes the setting natural.
 &
-\emph{Not tested in this PoC round.} Section A.\\[4pt]
+\textbf{Partly supported.} 96k reports, regression discontinuity at the trailing-EPS record. There is no jump and no bunching at the record. But beyond the surprise, returns become steeper in the distance above the record, mostly over the next three months (kink 1.5--3.1\% per SD, $t\approx2.7$), with no kinks at placebo cutoffs below it: underreaction to news that breaks the record. The effect is local, flattening beyond 1 SD, and size is imbalanced at the cutoff ($t=3.3$). \texttt{idea03\_record\_earnings}\\[4pt]
 
 \multicolumn{6}{@{}l}{\textbf{B. Expectation formation and forecasting}}\\[2pt]
 
@@ -376,10 +376,14 @@ section). Idea~8 (no gambler's fallacy in LLMs, but a reusable, leakage-robust p
 \textbf{Weak on these data.} Idea~7 (no structural Q4 dip) and Idea~11 (no effect of new-investor waves; the series
 is too short).
 
+\textbf{Section A.} Idea~1 is the strongest. Analysts underreact more to short streaks, though they do not expect
+reversals, which makes a natural mechanism section for the gambler's-fallacy paper. Idea~3 finds a new earnings
+anchor (an underreaction kink at the record) worth a daily-data follow-up. Idea~2 gives a robust volume asymmetry
+whose interpretation is open.
+
 \textbf{Main data upgrades.} Daily returns and six-digit stock codes from Eikon (Ideas 4, 9, 12), fiscal-year I/B/E/S
 consensus with analyst counts and detail data (Ideas 1, 5, 6, 7), and the pre-2015 CSDC weekly series (Idea~11).
-Sections A and D (Ideas 1--3 and 12) remain untested; Idea~1 fits naturally with the analyst panel built for Ideas
-5 and 6.
+Section D (Idea~12) remains untested.
 
 \begin{thebibliography}{99}
 \bibitem[Abarbanell and Bernard(1992)]{abarbanell1992} Abarbanell, J.~S. and V.~L. Bernard (1992). Tests of analysts'
